@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyBuddy — Ana Sayfa</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <div class="brand-badge">SB</div>
+        <span>StudyBuddy</span>
+      </div>
+      <nav>
+        <a class="active" href="index.html">Ana Sayfa</a>
+        <a href="tasks.html">Çalışma Araçları</a>
+        <a href="about.html">Hakkında</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero hero-enhanced">
+      <div class="hero-copy">
+        <span class="hero-pill">Yapay Zekâ Destekli Çalışma Planı</span>
+        <h1 class="h1">Daha çok değil, daha akıllı çalış.</h1>
+        <p class="p">
+          StudyBuddy, öğrencilerin görevlerini düzenlemesine, düzenli kalmasına
+          ve yapay zekâ destekli kişiselleştirilmiş çalışma planları oluşturmasına yardımcı olur.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#plannerSection" class="primary-btn">Plan Oluştur</a>
+          <a href="tasks.html" class="secondary-btn">Görev Listesini Aç</a>
+        </div>
+      </div>
+
+      <div class="hero-panel">
+        <div class="mini-stat-card">
+          <span class="mini-stat-label">Hedef</span>
+          <strong>Sınav Hazırlığı</strong>
+        </div>
+        <div class="mini-stat-card">
+          <span class="mini-stat-label">Mod</span>
+          <strong>Yapay Zekâ Planlayıcı</strong>
+        </div>
+        <div class="mini-stat-card">
+          <span class="mini-stat-label">Çıktı</span>
+          <strong>Günlük Yapılandırılmış Plan</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid feature-grid">
+      <div class="card feature-card">
+        <h3>Görev Listesi</h3>
+        <p>Çalışma görevlerini tek yerde ekle, tamamla ve yönet.</p>
+      </div>
+      <div class="card feature-card">
+        <h3>Odak Desteği</h3>
+        <p>Daha düzenli ve istikrarlı çalışmak için sade bir yapı sunar.</p>
+      </div>
+      <div class="card feature-card">
+        <h3>YZ Çalışma Planlayıcı</h3>
+        <p>Gün gün çalışma planı, görevler ve pratik öneriler üretir.</p>
+      </div>
+    </section>
+
+    <section id="plannerSection" class="planner-shell">
+      <div class="section-heading">
+        <span class="section-tag">YENİ</span>
+        <h2>Yapay Zekâ Çalışma Planlayıcı</h2>
+        <p>
+          Hedefini, kaç günün kaldığını ve günde kaç saat çalışabileceğini yaz.
+          Yapay zekâ senin için yapılandırılmış bir çalışma planı oluştursun.
+        </p>
+      </div>
+
+      <div class="planner-layout">
+        <div class="planner-form-card">
+          <form id="studyPlannerForm" class="planner-form">
+            <div class="form-group full-width">
+              <label for="goalInput">Çalışma Hedefi</label>
+              <textarea
+                id="goalInput"
+                rows="4"
+                placeholder="Örnek: 3 gün sonra AI sınavım var, bana odaklı bir çalışma planı hazırla."
+                required
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="daysInput">Kalan Gün</label>
+                <input id="daysInput" type="number" min="1" placeholder="3" required />
+              </div>
+
+              <div class="form-group">
+                <label for="hoursInput">Günlük Saat</label>
+                <input id="hoursInput" type="number" min="0.5" step="0.5" placeholder="2" required />
+              </div>
+            </div>
+
+            <div class="planner-actions">
+              <button type="submit" class="primary-btn planner-submit-btn">Plan Oluştur</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="planner-output-card">
+          <div class="output-header">
+            <h3>Yapay Zekâ Planın</h3>
+            <p id="plannerStatusText">Henüz plan oluşturulmadı.</p>
+          </div>
+
+          <div id="plannerLoading" class="planner-loading hidden">
+            <div class="spinner"></div>
+            <span>Çalışma planın hazırlanıyor...</span>
+          </div>
+
+          <div id="plannerError" class="planner-error hidden"></div>
+
+          <div id="plannerEmptyState" class="planner-empty-state">
+            <h4>İlk planını oluşturmaya hazır 🚀</h4>
+            <p>
+              Hedefini ve süreni gir, StudyBuddy senin için düzenli bir yol haritası oluştursun.
+            </p>
+          </div>
+
+          <div id="plannerResult" class="planner-result hidden">
+            <div class="result-top-card">
+              <span class="result-label">Oluşturulan Plan</span>
+              <h3 id="planTitle">Çalışma Planı</h3>
+            </div>
+
+            <div id="planDays" class="days-grid"></div>
+
+            <div class="tips-card">
+              <h4>Çalışma İpuçları</h4>
+              <ul id="planTips"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">© 2026 StudyBuddy — Taslak Website</div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+</body>
+</html>

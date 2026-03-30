@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyBuddy — Study Tools</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <div class="brand-badge">SB</div>
+        <span>StudyBuddy</span>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a class="active" href="tasks.html">Study Tools</a>
+        <a href="about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1 class="h1">Study Tools</h1>
+      <p class="p">
+        This page will include dynamic features (task add/remove, filters, and persistence).
+        In the next step, we will build the interactive task list with JavaScript.
+      </p>
+    </section>
+
+     <section class="grid">
+
+<div class="card" style="grid-column: span 12;">
+
+<h3>Add Study Task</h3>
+
+<input id="taskInput" type="text" placeholder="Enter a study task..." />
+
+<button onclick="addTask()">Add Task</button>
+
+</div>
+
+<div class="card" style="grid-column: span 12;">
+  <h3>Task Controls</h3>
+
+  <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    <input id="searchInput" type="text" placeholder="Search tasks..." />
+    
+    <select id="filterSelect">
+      <option value="all">All</option>
+      <option value="active">Active</option>
+      <option value="done">Done</option>
+    </select>
+
+    <div id="taskCounter" style="color: var(--muted); margin-left:auto;">
+      0 tasks • 0 done
+    </div>
+  </div>
+</div>
+
+<div class="card" style="grid-column: span 12;">
+  <h3>Your Tasks</h3>
+  <ul id="taskList"></ul>
+</div>
+
+</section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">© 2026 StudyBuddy — Draft Website</div>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

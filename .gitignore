@@ -1,0 +1,18 @@
+# ENV (SECRET)
+.env
+backend/.env
+
+# Python
+.venv/
+venv/
+backend/.venv/
+backend/venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+
+# Logs
+*.log
