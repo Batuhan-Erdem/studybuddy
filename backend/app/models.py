@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Literal
 
 class DayPlan(BaseModel):
     day: int
@@ -21,3 +21,18 @@ class StudyPlanResponse(BaseModel):
     status: str
     plan: StructuredPlan
     raw_text: str | None = None
+
+
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str
+
+
+class ChatRequest(BaseModel):
+    message: str
+    plan: StructuredPlan | None = None
+    history: List[ChatMessage] | None = None
+
+
+class ChatResponse(BaseModel):
+    reply: str

@@ -83,23 +83,22 @@ function renderTasks() {
     li.style.background = "rgba(255,255,255,0.03)";
 
     li.style.background = task.done
-  ? "rgba(66, 211, 146, 0.08)"
-  : "rgba(255,255,255,0.03)";
+      ? "rgba(66, 211, 146, 0.08)"
+      : "rgba(255,255,255,0.03)";
 
-li.style.border = task.done
-  ? "1px solid rgba(66, 211, 146, 0.22)"
-  : "1px solid rgba(255,255,255,0.10)";
+    li.style.border = task.done
+      ? "1px solid rgba(66, 211, 146, 0.22)"
+      : "1px solid rgba(255,255,255,0.10)";
 
-li.innerHTML = `
+    li.innerHTML = `
   <span style="flex:1; ${task.done ? 'text-decoration:line-through; opacity:0.7;' : ''}">
     ${task.text}
   </span>
   <div style="display:flex; gap:8px; align-items:center;">
-    ${
-      task.done
+    ${task.done
         ? `<span class="task-done-badge">Tamamlandı</span>`
         : `<button class="task-mini-btn" onclick="toggleTask(${realIndex})">✔</button>`
-    }
+      }
     <button class="task-mini-btn delete-btn" onclick="deleteTask(${realIndex})">❌</button>
   </div>
 `;
@@ -345,4 +344,114 @@ const savedPlan = loadCurrentPlan();
 
 if (savedPlan) {
   renderPlannerResult({ plan: savedPlan });
+}
+
+/* =========================
+   PLAN ASSISTANT CHAT
+========================= */
+
+const chatForm = document.getElementById("chatForm");
+const chatInput = document.getElementById("chatInput");
+const chatSendBtn = document.getElementById("chatSendBtn");
+const chatMessages = document.getElementById("chatMessages");
+const chatStatusText = document.getElementById("chatStatusText");
+
+function saveChatHistory(history) {
+  localStorage.setItem("chatHistory", JSON.stringify(history));
+}
+
+function loadChatHistory() {
+  const saved = localStorage.getItem("chatHistory");
+  return saved ? JSON.parse(saved) : [];
+}
+
+let chatHistory = loadChatHistory();
+
+function renderChatMessages() {
+  if (!chatMessages) return;
+
+  chatMessages.innerHTML = "";
+
+  if (!chatHistory.length) {
+    const empty = document.createElement("div");
+    empty.className = "chat-bubble assistant";
+    empty.textContent = "Merhaba! Planınla ilgili sorularını buradan sorabilirsin.";
+    chatMessages.appendChild(empty);
+    return;
+  }
+
+  chatHistory.forEach((m) => {
+    const bubble = document.createElement("div");
+    bubble.className = `chat-bubble ${m.role}`;
+    bubble.textContent = m.content;
+    chatMessages.appendChild(bubble);
+  });
+
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+async function handleChatSubmit(event) {
+  event.preventDefault();
+  if (!chatInput) return;
+
+  const message = chatInput.value.trim();
+  if (!message) return;
+
+  chatInput.value = "";
+  if (chatInput) chatInput.disabled = true;
+  if (chatSendBtn) chatSendBtn.disabled = true;
+  if (chatStatusText) chatStatusText.textContent = "Asistan düşünüyor...";
+
+  chatHistory.push({ role: "user", content: message });
+  saveChatHistory(chatHistory);
+  renderChatMessages();
+
+  try {
+    const plan = loadCurrentPlan();
+    const recentHistory = chatHistory.slice(-10);
+
+    const response = await fetch(`${API_BASE_URL}/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message,
+        plan,
+        history: recentHistory,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Chat yanıtı alınamadı.");
+    }
+
+    const data = await response.json();
+    const reply = (data && data.reply) ? String(data.reply) : "";
+
+    chatHistory.push({ role: "assistant", content: reply || "Bir cevap üretemedim." });
+    saveChatHistory(chatHistory);
+    renderChatMessages();
+
+    if (chatStatusText) chatStatusText.textContent = "Yanıt hazır.";
+  } catch (error) {
+    chatHistory.push({
+      role: "assistant",
+      content: "⚠️ Asistana bağlanılamadı. Backend çalışıyor mu kontrol et.",
+    });
+    saveChatHistory(chatHistory);
+    renderChatMessages();
+
+    if (chatStatusText) chatStatusText.textContent = "Bir hata oluştu.";
+    console.error(error);
+  } finally {
+    if (chatInput) chatInput.disabled = false;
+    if (chatSendBtn) chatSendBtn.disabled = false;
+    if (chatInput) chatInput.focus();
+  }
+}
+
+if (chatForm) {
+  renderChatMessages();
+  chatForm.addEventListener("submit", handleChatSubmit);
 }

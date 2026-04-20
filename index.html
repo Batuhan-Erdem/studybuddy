@@ -1,11 +1,13 @@
 <!doctype html>
 <html lang="tr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>StudyBuddy — Ana Sayfa</title>
-  <link rel="stylesheet" href="../assets/style.css" />
+  <link rel="stylesheet" href="assets/style.css" />
 </head>
+
 <body>
 
   <header class="nav">
@@ -84,12 +86,9 @@
           <form id="studyPlannerForm" class="planner-form">
             <div class="form-group full-width">
               <label for="goalInput">Çalışma Hedefi</label>
-              <textarea
-                id="goalInput"
-                rows="4"
+              <textarea id="goalInput" rows="4"
                 placeholder="Örnek: 3 gün sonra AI sınavım var, bana odaklı bir çalışma planı hazırla."
-                required
-              ></textarea>
+                required></textarea>
             </div>
 
             <div class="form-row">
@@ -143,6 +142,21 @@
               <ul id="planTips"></ul>
             </div>
           </div>
+
+          <div class="chat-card">
+            <div class="output-header">
+              <h3>Plan Asistanı</h3>
+              <p id="chatStatusText">Planınla ilgili sorularını sor.</p>
+            </div>
+
+            <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+
+            <form id="chatForm" class="chat-form">
+              <input id="chatInput" class="chat-input" type="text" placeholder="Örn: Gün 2’de neye odaklanmalıyım?"
+                autocomplete="off" required />
+              <button id="chatSendBtn" type="submit" class="secondary-btn">Gönder</button>
+            </form>
+          </div>
         </div>
       </div>
     </section>
@@ -152,6 +166,7 @@
     <div class="container">© 2026 StudyBuddy — Taslak Website</div>
   </footer>
 
-  <script src="../assets/app.js"></script>
+  <script src="assets/app.js"></script>
 </body>
+
 </html>
