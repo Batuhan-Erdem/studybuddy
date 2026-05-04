@@ -1,0 +1,311 @@
+KNOCK
+Design Your Door
+CSE 358 Introduction to Artificial Intelligence
+Creative Project Assignment
+"Mama, take this badge off of me"
+"I can’t use it anymore"
+Bob Dylan, Knockin’ on Heaven’s Door (1973)
+Spring 2025–2026
+KNOCK — Design Your Door CSE 358 Introduction to Artificial Intelligence
+1. Introduction
+This document defines the framework for the semester project of the CSE 358 Introduction to
+Artificial Intelligence course: "Knock! Design Your Door." Inspired by Bob Dylan’s 1973
+composition "Knockin’ on Heaven’s Door," the project asks each student or team to produce
+an original digital artwork that places generative AI technologies at the heart of the creative
+process.
+This is not a conventional technical assignment. It is an open call for art. Beyond learning
+to wield current AI tools, students are expected to engage deeply with the historical and
+cultural context of the song’s era, to encounter Dylan as an artist and thinker, and to forge a
+personal connection with the philosophical themes the song carries: farewell, transition,
+mortality, legacy, and the search for meaning.
+The spirit of the project:
+"Everyone knocks on heaven’s door in their own way. What matters is not what you find
+behind it, but who you discover yourself to be while knocking."
+2. Project Framework
+2.1 Core Philosophy
+The project follows an open-call format. The subject and three mandatory constraints are fixed;
+everything else, medium, form, tone, technical approach, aesthetic direction, is left entirely to
+the student’s creative judgment. The aim is to allow students to demonstrate technical
+competence, artistic vision, and philosophical depth simultaneously.
+2.2 Mandatory Constraints
+The only boundaries of this project are the three constraints below. They exist not to limit
+creativity but to establish a technical and intellectual foundation.
+# Constraint Description
+The artwork must combine at least two distinct generative AI techniques.
+Example pairings: LLM and Text-to-Image, NLP Analysis and Music
+At least 2 AI Generation, Embedding Visualization and TTS, Sentiment Analysis and
+1
+techniques Diffusion Model, RAG Pipeline and Generative Audio.
+Techniques from the same family (e.g., two different LLM prompts) do not count
+as two separate techniques.
+The artwork must be built on original code written by the student or team.
+Output produced solely through no-code tools is not sufficient.
+2 Original code A working pipeline, API integration, or processing workflow must be designed in
+Python, JavaScript, or another programming language. All source code will be
+submitted (preferably via a GitHub repository).
+The artwork must organically carry the historical and cultural context of
+3 Historical context the song. Some concepts to consider are: the Vietnam War, the
+counterculture anti-war movement, the film Pat Garrett & Billy the Kid
+Page 2
+KNOCK — Design Your Door CSE 358 Introduction to Artificial Intelligence
+(1973), the film Knocking on Heaven’s Door (1997), and Dylan’s
+worldview of that era should be embedded in the work’s DNA.
+A superficial reference is not enough; the spirit of the references must permeate
+the structure, content, or experience of the artwork.
+2.3 Open Territory
+Beyond the three constraints, every decision belongs to the student or team. The list below is
+offered purely as inspiration and approaches not on this list are equally valid.
+Possible Medium Example Approach
+Extract the emotional map of the song and create a new soundscape,
+Generative music
+reinterpret the original harmonics through AI.
+Visualize each verse through diffusion models and compose a video essay,
+Visual art / video
+narrate your own philosophical commentary.
+Design an experience that co-creates poetry with the user, revive Dylan’s
+Interactive narrative
+poetic voice through prompt engineering and conversation design.
+Data art / Visualize how the song’s covers cluster in embedding space across
+sonification languages, transform the past data into sound.
+Performance / An AI performance that interacts with the audience during a live demo or a
+installation physical or digital installation design.
+An interactive web application that draws the user into the song’s universe,
+Web experience
+a RAG-powered chatbot that speaks from within the era.
+Hybrid / other Any medium or combination not listed above. Surprise us!
+3. Deliverables
+Each student or team must submit the following three deliverables by the deadline. All three
+are mandatory and contribute to the final grade.
+3.1 The Artwork
+A functioning digital artwork that can be experienced, run, or demonstrated. The work must
+be self-contained enough for a reviewer to experience it independently or with minimal setup
+instructions. If the artwork requires external API keys, clear setup instructions must be
+provided in the README.
+3.2 Artist’s Manifesto
+A reflective document (1,500 to 3,000 words) that accompanies the artwork. The manifesto is
+the philosophical heart of the project. It must address the following questions:
+• Why this medium? What led you to choose this particular form of expression?
+• What caught you? Which aspect of the song, its era, or Dylan’s worldview resonated
+with you most deeply?
+Page 3
+KNOCK — Design Your Door CSE 358 Introduction to Artificial Intelligence
+• AI as what? In your creative process, was AI a tool, a collaborator, a mirror, or
+something else entirely? Reflect on this relationship honestly.
+• Your door: What does "knocking on heaven’s door" mean in your own life? What
+transitions, farewells, or thresholds does this phrase evoke for you?
+On the manifesto:
+Writing a technical report is straightforward. Answering the question "what does this song say
+to me?" is what leaves a mark. The manifesto is where the project becomes your own work.
+3.3 Code Repository
+A GitHub repository containing all source code, configuration files, and a comprehensive
+README. The README must include:
+• Project description and artistic statement (brief)
+• Technical architecture overview
+• Installation and setup instructions
+• List of AI techniques used and how they interact
+• Dependencies and API requirements
+• Example outputs or screenshots
+4. Team Structure
+Students may work individually or in teams of two to three. Larger teams are not permitted.
+For team submissions, the manifesto must include a brief section describing each member’s
+contribution, both technical and creative. All team members must be able to discuss any part
+of the project during the exhibition.
+5. Evaluation Overview
+The project is evaluated across four dimensions, each weighted as shown below. The rubric
+rewards depth over breadth: a focused, deeply realized artwork with a compelling manifesto
+will score higher than a technically ambitious but philosophically shallow submission.
+Dimension Weight Primary Evidence
+Technical depth 30% Code, architecture, AI usage
+Artistic originality 30% Artwork, aesthetic choices
+Philosophical engagement 25% Manifesto, depth of reflection
+Presentation and craft 15% Exhibition demo, polish, README.
+Page 4
+KNOCK — Design Your Door CSE 358 Introduction to Artificial Intelligence
+6. Detailed Rubric
+The following rubric provides detailed descriptors for each performance level.
+6.1 Technical Depth (30%)
+Excellent (90–
+Criterion Good (75–89) Adequate (60–74) Poor (0–59)
+100)
+Two or more AI
+Two techniques
+techniques are Two AI techniques
+AI are present but Only one AI
+deeply interwoven, are used together
+technique largely technique is used,
+producing with a clear
+integration independent; or the second is
+emergent results functional
+(12%) connection feels trivial.
+that neither could relationship.
+forced.
+achieve alone.
+Well-structured, Functional,
+Code works but is
+documented, reasonably Code is broken,
+disorganized or
+Code modular code. organized code. heavily copy-
+poorly
+quality Clear README README covers pasted, or missing.
+commented.
+(10%) with architecture setup. Minor No meaningful
+README is
+diagram. Easy to documentation README.
+minimal.
+set up. gaps.
+Pushes beyond
+Standard API
+basic API calls: Solid use of APIs
+usage with Minimal technical
+Technical custom pipelines, with some
+minimal effort. Wrapper
+ambition fine-tuning, novel customization or
+customization. around a single
+(8%) combinations, or non-trivial
+Follows a tutorial API call.
+significant data orchestration.
+closely.
+processing.
+6.2 Artistic Originality (30%)
+Excellent (90–
+Criterion Good (75–89) Adequate (60–74) Poor (0–59)
+100)
+A distinctive,
+surprising concept A clear artistic
+Some creative
+that reinterprets vision with original No discernible
+Creative intent is visible, but
+the song in an elements. The artistic vision. The
+vision the concept is
+unexpected way. work has a work feels like a
+(12%) predictable or
+The viewer is recognizable technical demo.
+derivative.
+moved or identity.
+provoked.
+Every element The work has a Some aesthetic No coherent
+Aesthetic serves the artistic consistent choices are aesthetic.
+coherence whole. Nothing aesthetic with intentional, but the Elements feel
+(10%) feels arbitrary or minor overall experience randomly
+disconnected. inconsistencies. feels uneven. assembled.
+The work evokes a
+genuine emotional The work creates a The work attempts The work is
+Emotional
+response. It lingers recognizable emotional emotionally flat or
+impact
+in the mind after mood or engagement but unintentionally off-
+(8%)
+the experience atmosphere. doesn’t fully land. putting.
+ends.
+Page 5
+KNOCK — Design Your Door CSE 358 Introduction to Artificial Intelligence
+6.3 Philosophical Engagement (25%)
+Excellent (90–
+Criterion Good (75–89) Adequate (60–74) Poor (0–59)
+100)
+Deep, nuanced
+understanding of
+Good grasp of the Basic historical
+1973, Dylan’s No meaningful
+Historical historical context awareness.
+context, and the engagement with
+depth with specific References to the
+counterculture. the historical
+(10%) references that era are present but
+The era is woven context.
+enrich the work. superficial.
+into the work’s
+fabric.
+A deeply personal,
+intellectually A thoughtful The manifesto Manifesto is
+Manifesto honest reflection. manifesto that covers the missing,
+quality The reader senses addresses the required questions perfunctory, or
+(10%) a genuine required questions but reads as an does not engage
+encounter with the with sincerity. obligation. with the themes.
+song’s themes.
+The student’s own
+experience,
+Some personal Personal elements
+Personal growth, or No personal
+reflection is are mentioned but
+connection vulnerability is connection is
+present and feels feel generic or
+(5%) palpable. The evident.
+authentic. disconnected.
+project clearly
+mattered to them.
+6.4 Presentation and Craft (15%)
+Excellent (90– Adequate (60–
+Criterion Good (75–89) Poor (0–59)
+100) 74)
+Confident, Clear
+Basic
+engaging live presentation with Unable to present
+Exhibition presentation. Can
+demo. Articulates good command of coherently or
+presentation explain the work
+both technical and the material. demonstrate the
+(8%) but struggles with
+philosophical Handles work live.
+deeper questions.
+dimensions fluidly. questions well.
+The artwork feels Mostly complete
+The work
+finished and with minor Major elements
+Polish and functions but feels
+intentional. No unfinished are missing,
+completeness rushed or
+rough edges, elements that broken, or clearly
+(7%) incomplete in
+broken features, don’t detract unfinished.
+places.
+or missing pieces. significantly.
+Page 6
+KNOCK — Design Your Door CSE 358 Introduction to Artificial Intelligence
+7. Academic Integrity
+The use of generative AI tools is not only permitted but required in this project. However,
+academic integrity expectations remain in force:
+• Transparency: All AI tools, models, and APIs used must be explicitly listed in the
+README and manifesto.
+• Authorship: The creative vision, architectural decisions, and philosophical reflection
+must be the student’s own. AI generates material; you curate, direct, and give it
+meaning.
+• Attribution: Any code, datasets, or creative assets borrowed from external sources
+must be properly attributed.
+• Understanding: You must be able to explain every component of your work during
+the exhibition. If you cannot explain how a piece of your pipeline works, it will be treated
+as unattributed.
+8. Suggested Starting Points
+The following resources may help you begin your research. You are not limited to these and
+are encouraged to explore beyond them.
+On Dylan and the song
+• The film Pat Garrett & Billy the Kid (Sam Peckinpah, 1973): it is the original context of
+the song
+• The film Knocking on Heaven’s Door (Thomas Jahn, 1997): an alternative context as
+a movie of the song
+• Dylan’s Nobel Prize lecture (2016): presents his reflections on literature, music, and
+meaning
+• Greil Marcus, Like a Rolling Stone: Bob Dylan at the Crossroads (2005)
+• Howard Sounes, Down the Highway: The Life of Bob Dylan (2011)
+• The film A complete unknown (James Mangold, 2026).
+On AI tools and techniques
+• OpenAI API, Anthropic API, Hugging Face: LLM access and inference
+• Stable Diffusion, DALL·E: text-to-image generation
+• MusicGen (Meta), Magenta (Google): music generation
+• LangChain, LlamaIndex: RAG pipelines and orchestration
+• spaCy, NLTK, Hugging Face Transformers: NLP analysis
+• Coqui TTS, ElevenLabs: text-to-speech synthesis
+Page 7
+KNOCK — Design Your Door CSE 358 Introduction to Artificial Intelligence
+A Final Note
+This project is designed to be memorable. Not because it is difficult — though it will challenge
+you — but because it asks you to bring your full self to the work: your technical skills, your
+aesthetic sensibility, and your inner life.
+Dylan wrote "Knockin’ on Heaven’s Door" for a dying sheriff in a Western. But the song
+became something far larger: a universal meditation on farewell, on the weight of things we
+carry and the relief of letting them go. As you build your project, let the song work on you.
+Listen to it, read about it, sit with it. The best projects will come not from those who found the
+cleverest technical solution, but from those who let the song change them, even a little.
+Knock.
+The door is yours to design. What’s behind it is yours to discover.
+Page 8

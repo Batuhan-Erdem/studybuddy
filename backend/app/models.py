@@ -23,6 +23,12 @@ class StudyPlanResponse(BaseModel):
     raw_text: str | None = None
 
 
+class PDFAnalysisResponse(BaseModel):
+    status: str
+    filename: str
+    page_count: int
+
+
 class ChatMessage(BaseModel):
     role: Literal["user", "assistant"]
     content: str

@@ -1,0 +1,28 @@
+{
+  "title": "Demo Study Plan",
+  "days": [
+    {
+      "day": 1,
+      "focus": "Research and outline",
+      "duration_hours": 2,
+      "tasks": [
+        "Read assignment",
+        "List requirements",
+        "Draft outline"
+      ]
+    },
+    {
+      "day": 2,
+      "focus": "Implementation",
+      "duration_hours": 2,
+      "tasks": [
+        "Write code examples",
+        "Prepare report content"
+      ]
+    }
+  ],
+  "tips": [
+    "Start with the hardest task",
+    "Leave time for final review"
+  ]
+}
