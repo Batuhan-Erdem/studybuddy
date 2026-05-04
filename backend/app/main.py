@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from app.models import ChatRequest, ChatResponse, StudyPlanRequest, StudyPlanResponse, StructuredPlan
 from app.crew_setup import run_study_crew
 from app.graph_setup import run_study_graph
@@ -22,6 +22,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    return Response(status_code=204)
 
 @app.get("/")
 def read_root():
@@ -49,17 +54,28 @@ def plan_study(request: StudyPlanRequest):
             )
 
         except Exception:
-            fallback_plan = StructuredPlan(
-                title="Generated Study Plan",
-                days=[],
-                tips=[]
-            )
+            try:
+                from json_repair import repair_json
 
-            return StudyPlanResponse(
-                status="success",
-                plan=fallback_plan,
-                raw_text=cleaned_result
-            )
+                repaired = repair_json(cleaned_result, return_objects=False)
+                parsed = json.loads(str(repaired).strip())
+                structured_plan = StructuredPlan(**parsed)
+                return StudyPlanResponse(
+                    status="success",
+                    plan=structured_plan,
+                    raw_text=cleaned_result,
+                )
+            except Exception:
+                structured_plan = run_study_graph(
+                    goal=request.goal,
+                    days=request.days,
+                    hours_per_day=request.hours_per_day,
+                )
+                return StudyPlanResponse(
+                    status="success",
+                    plan=structured_plan,
+                    raw_text=cleaned_result,
+                )
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
