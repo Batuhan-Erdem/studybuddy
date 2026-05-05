@@ -27,6 +27,7 @@ class PDFAnalysisResponse(BaseModel):
     status: str
     filename: str
     page_count: int
+    content: str | None = None
 
 
 class ChatMessage(BaseModel):

@@ -277,6 +277,12 @@ body {
   align-items: start;
 }
 
+.planner-input-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
 .planner-form-card,
 .planner-output-card {
   background: rgba(17, 26, 46, 0.82);
@@ -284,6 +290,57 @@ body {
   border-radius: 24px;
   padding: 22px;
   box-shadow: var(--shadow);
+}
+
+.pdf-upload-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pdf-upload-header h3 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.pdf-upload-header p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.pdf-analysis-status {
+  min-height: 44px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.03);
+  line-height: 1.6;
+}
+
+.pdf-analysis-status.info {
+  border-color: rgba(93, 214, 255, 0.28);
+}
+
+.pdf-analysis-status.success {
+  border-color: rgba(66, 211, 146, 0.28);
+  color: #c8ffe7;
+}
+
+.pdf-analysis-status.warning {
+  border-color: rgba(255, 200, 87, 0.28);
+  color: #ffe7b3;
+}
+
+.pdf-analysis-status.error {
+  border-color: rgba(255, 107, 129, 0.28);
+  color: #ffc5cf;
+}
+
+.deadline-hint {
+  color: var(--muted);
+  line-height: 1.5;
 }
 
 .planner-form {
@@ -607,6 +664,10 @@ body {
 
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .planner-input-stack {
+    gap: 14px;
   }
 
   .nav-inner {

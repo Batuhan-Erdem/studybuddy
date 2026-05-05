@@ -42,74 +42,75 @@ def _build_user_input(state: StudyGraphState) -> dict[str, Any]:
 
 def _plan_node(state: StudyGraphState) -> dict[str, Any]:
     from langchain_core.messages import HumanMessage, SystemMessage
+    print(f"DEBUG: _plan_node başladı. Girdi uzunluğu: {len(state['user_input'])}")
 
     lang = _detect_language(state["goal"])
     system = (
         "You are an expert academic planner. "
-        "Return ONLY valid JSON. Do not add markdown. Do not add explanations. "
-        "JSON must match this shape exactly: "
-        "{\"title\": string, \"days\": [{\"day\": number, \"focus\": string, \"duration_hours\": number, \"tasks\": [string]}], \"tips\": [string]} "
-        "Language rule: respond ONLY in the same language as the user's goal."
+        "Create a study plan based on the provided PDF context. "
+        "Return ONLY valid JSON. Do not add markdown. "
+        "JSON shape: {\"title\": string, \"days\": [{\"day\": number, \"focus\": string, \"duration_hours\": number, \"tasks\": [string]}], \"tips\": [string]}"
     )
     user = (
         f"USER_GOAL_LANGUAGE={lang}\n"
-        f"Create a structured day-by-day study plan for this user input:\n"
-        f"{state['user_input']}"
+        f"CONTEXT: {state['user_input']}\n\n"
+        "Generate the study plan now."
     )
 
-    llm = _get_llm()
-    response = llm.invoke([SystemMessage(content=system), HumanMessage(content=user)])
-    return {"draft_json": str(response.content).strip()}
-
+    try:
+        llm = _get_llm()
+        response = llm.invoke([SystemMessage(content=system), HumanMessage(content=user)])
+        print(f"DEBUG: LLM Yanıtı Alındı (ilk 100 karakter): {str(response.content)[:100]}...")
+        return {"draft_json": str(response.content).strip()}
+    except Exception as e:
+        print(f"HATA: LLM Çağrısı Başarısız: {str(e)}")
+        raise e
 
 def _breakdown_node(state: StudyGraphState) -> dict[str, Any]:
     from langchain_core.messages import HumanMessage, SystemMessage
-
+    print("DEBUG: _breakdown_node başladı.")
+    
     lang = _detect_language(state["goal"])
-    system = (
-        "You are a task breakdown specialist. "
-        "Improve the plan to be more practical and actionable, while keeping the same JSON shape. "
-        "Return ONLY valid JSON. Do not add markdown. Do not add explanations. "
-        "Language rule: keep the same language as the input plan."
-    )
-    user = (
-        f"USER_GOAL_LANGUAGE={lang}\n"
-        "Here is the draft plan JSON to improve (return corrected/improved JSON only):\n"
-        f"{state['draft_json']}"
-    )
+    system = "Improve this JSON study plan. Return ONLY valid JSON."
+    user = f"JSON to improve:\n{state['draft_json']}"
 
-    llm = _get_llm()
-    response = llm.invoke([SystemMessage(content=system), HumanMessage(content=user)])
-    return {"draft_json": str(response.content).strip()}
-
+    try:
+        llm = _get_llm()
+        response = llm.invoke([SystemMessage(content=system), HumanMessage(content=user)])
+        return {"draft_json": str(response.content).strip()}
+    except Exception as e:
+        print(f"HATA: Breakdown LLM Hatası: {str(e)}")
+        return {"draft_json": state["draft_json"]} # Hata alırsak eskisini tut
 
 def _validate_node(state: StudyGraphState) -> dict[str, Any]:
+    print(f"DEBUG: _validate_node denemesi. JSON uzunluğu: {len(state['draft_json'])}")
     try:
-        parsed = json.loads(state["draft_json"])
+        # Markdown bloklarını temizle (```json ... ```)
+        clean_json = state["draft_json"].replace("```json", "").replace("```", "").strip()
+        parsed = json.loads(clean_json)
         structured_plan = StructuredPlan(**parsed)
+        print("DEBUG: Plan başarıyla valide edildi.")
         return {"structured_plan": structured_plan}
     except Exception as exc:
+        print(f"UYARI: Validasyon hatası: {str(exc)}")
         errors = list(state.get("errors", []))
         errors.append(str(exc))
         return {"errors": errors}
 
-
 def _repair_node(state: StudyGraphState) -> dict[str, Any]:
     from json_repair import repair_json
-
     attempt = int(state.get("attempt", 0)) + 1
+    print(f"DEBUG: _repair_node devrede (Deneme: {attempt})")
     repaired = repair_json(state["draft_json"], return_objects=False)
     return {"draft_json": str(repaired).strip(), "attempt": attempt}
 
-
 def _fallback_node(state: StudyGraphState) -> dict[str, Any]:
-    fallback_plan = StructuredPlan(title="Generated Study Plan", days=[], tips=[])
+    print("KRİTİK: Tüm denemeler başarısız oldu, fallback plan oluşturuluyor.")
+    fallback_plan = StructuredPlan(title="Hata: Plan Oluşturulamadı", days=[], tips=["Lütfen daha kısa bir PDF veya farklı bir hedef deneyin."])
     return {"structured_plan": fallback_plan}
-
 
 def build_study_graph(max_attempts: int = 3):
     from langgraph.graph import END, StateGraph
-
     graph = StateGraph(StudyGraphState)
     graph.add_node("build_input", _build_user_input)
     graph.add_node("plan", _plan_node)
@@ -125,7 +126,11 @@ def build_study_graph(max_attempts: int = 3):
 
     def route_after_validate(state: StudyGraphState):
         if state.get("structured_plan") is not None:
-            return END
+            # Eğer gün sayısı 0 değilse bitir, 0 ise fallback'e gitme ihtimalini düşün
+            plan = state.get("structured_plan")
+            if len(plan.days) > 0:
+                return END
+        
         if int(state.get("attempt", 0)) >= max_attempts:
             return "fallback"
         return "repair"
@@ -144,7 +149,6 @@ def build_study_graph(max_attempts: int = 3):
 
     return graph.compile()
 
-
 def run_study_graph(goal: str, days: int, hours_per_day: float) -> StructuredPlan:
     app = build_study_graph(max_attempts=3)
     state: StudyGraphState = {
@@ -158,6 +162,10 @@ def run_study_graph(goal: str, days: int, hours_per_day: float) -> StructuredPla
     }
     final_state = app.invoke(state)
     structured_plan = final_state.get("structured_plan")
-    if structured_plan is None:
-        raise RuntimeError("LangGraph did not produce a structured plan")
+    
+    if structured_plan is None or (hasattr(structured_plan, 'days') and len(structured_plan.days) == 0):
+        print("HATA: LangGraph geçerli bir plan üretemedi!")
+        if structured_plan is None:
+            raise RuntimeError("Yapay zeka plan üretemedi.")
+    
     return structured_plan

@@ -158,6 +158,12 @@ renderTasks();
 const API_BASE_URL = "http://127.0.0.1:8000";
 
 const studyPlannerForm = document.getElementById("studyPlannerForm");
+const pdfInput = document.getElementById("pdfInput");
+const pdfAnalyzeBtn = document.getElementById("pdfAnalyzeBtn");
+const pdfPlanBtn = document.getElementById("pdfPlanBtn");
+const pdfDeadlineInput = document.getElementById("pdfDeadlineInput");
+const pdfHoursInput = document.getElementById("pdfHoursInput");
+const pdfAnalysisStatus = document.getElementById("pdfAnalysisStatus");
 const goalInput = document.getElementById("goalInput");
 const daysInput = document.getElementById("daysInput");
 const hoursInput = document.getElementById("hoursInput");
@@ -172,11 +178,18 @@ const planTitle = document.getElementById("planTitle");
 const planDays = document.getElementById("planDays");
 const planTips = document.getElementById("planTips");
 
+const chatForm = document.getElementById("chatForm");
+const chatInput = document.getElementById("chatInput");
+const chatSendBtn = document.getElementById("chatSendBtn");
+const chatMessages = document.getElementById("chatMessages");
+const chatStatusText = document.getElementById("chatStatusText");
+
+let selectedPdfFile = null;
+let extractedPdfContent = "";
+
 function setPlannerLoading(isLoading) {
   if (!plannerLoading) return;
-
   plannerLoading.classList.toggle("hidden", !isLoading);
-
   if (studyPlannerForm) {
     const submitButton = studyPlannerForm.querySelector('button[type="submit"]');
     if (submitButton) {
@@ -188,142 +201,219 @@ function setPlannerLoading(isLoading) {
 
 function showPlannerError(message) {
   if (!plannerError) return;
-
   plannerError.textContent = message;
   plannerError.classList.remove("hidden");
 }
 
 function clearPlannerError() {
   if (!plannerError) return;
-
   plannerError.textContent = "";
   plannerError.classList.add("hidden");
 }
 
+function setPdfStatus(message, variant = "info") {
+  if (!pdfAnalysisStatus) return;
+  pdfAnalysisStatus.textContent = message;
+  pdfAnalysisStatus.className = "pdf-analysis-status";
+  pdfAnalysisStatus.classList.add(variant);
+}
+
+function setPdfLoading(isLoading) {
+  if (pdfAnalyzeBtn) {
+    pdfAnalyzeBtn.disabled = isLoading;
+    pdfAnalyzeBtn.textContent = isLoading ? "Analiz ediliyor..." : "PDF’i Analiz Et";
+  }
+}
+
+function setPdfPlanLoading(isLoading) {
+  if (pdfPlanBtn) {
+    pdfPlanBtn.disabled = isLoading;
+    pdfPlanBtn.textContent = isLoading ? "Plan oluşturuluyor..." : "PDF Kartından Plan Oluştur";
+  }
+}
+
+
+async function handlePdfAnalyze() {
+  if (!pdfInput || !pdfInput.files || !pdfInput.files[0]) {
+    setPdfStatus("Önce bir PDF dosyası seçmelisin.", "warning");
+    return;
+  }
+  selectedPdfFile = pdfInput.files[0];
+  setPdfLoading(true);
+  setPdfStatus("PDF analiz ediliyor (MCP)...", "info");
+  try {
+    const formData = new FormData();
+    formData.append("file", selectedPdfFile);
+    const response = await fetch(`${API_BASE_URL}/analyze-pdf`, {
+      method: "POST",
+      body: formData,
+    });
+    if (!response.ok) throw new Error("PDF analiz edilemedi.");
+    const data = await response.json();
+    extractedPdfContent = data.content || "";
+    setPdfStatus(`PDF başarıyla analiz edildi. ${data.page_count} sayfa içeriği okundu.`, "success");
+  } catch (error) {
+    setPdfStatus("PDF analiz edilemedi. Backend'i kontrol et.", "error");
+    console.error(error);
+  } finally {
+    setPdfLoading(false);
+  }
+}
+
+async function handlePdfPlan() {
+  if (!selectedPdfFile && (!pdfInput || !pdfInput.files || !pdfInput.files[0])) {
+    setPdfStatus("Önce bir PDF dosyası seçmelisin.", "warning");
+    return;
+  }
+  if (!pdfDeadlineInput || !pdfDeadlineInput.value) {
+    setPdfStatus("Deadline tarihini girmen gerekiyor.", "warning");
+    return;
+  }
+  const hoursPerDay = Number(pdfHoursInput?.value);
+  if (!hoursPerDay) {
+    setPdfStatus("Günlük saat bilgisini girmen gerekiyor.", "warning");
+    return;
+  }
+
+  // UI Hazırlığı
+  clearPlannerError();
+  setPdfPlanLoading(true);
+  
+  if (plannerResult) plannerResult.classList.add("hidden");
+  if (plannerEmptyState) plannerEmptyState.classList.add("hidden");
+  if (plannerStatusText) plannerStatusText.textContent = "Yapay zekâ planın hazırlanıyor...";
+  setPlannerLoading(true);
+
+  try {
+    // Adım 1: Eğer henüz analiz edilmemişse analiz et (MCP)
+    if (!extractedPdfContent) {
+      setPdfStatus("Önce PDF içeriği analiz ediliyor...", "info");
+      const formData = new FormData();
+      formData.append("file", selectedPdfFile || pdfInput.files[0]);
+      const analyzeRes = await fetch(`${API_BASE_URL}/analyze-pdf`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!analyzeRes.ok) throw new Error("Otomatik analiz başarısız.");
+      const analyzeData = await analyzeRes.json();
+      extractedPdfContent = analyzeData.content || "";
+    }
+
+    // Adım 2: Saf JSON ile plan isteği gönder (Çalışan /plan-study ucunu kullanıyoruz)
+    setPdfStatus("Plan oluşturuluyor (JSON)...", "info");
+    
+    // Hedefi PDF içeriğine göre kurgula
+    const goal = `Bu PDF içeriğine göre bir çalışma planı hazırla. Deadline: ${pdfDeadlineInput.value}. İçerik: ${extractedPdfContent}`;
+    
+    // Tarihten gün farkını hesapla (Frontend tarafında da yapılabilir veya backend halleder)
+    const deadlineDate = new Date(pdfDeadlineInput.value);
+    const today = new Date();
+    const daysDiff = Math.max(1, Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24)));
+
+    const response = await fetch(`${API_BASE_URL}/plan-study`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        goal: goal,
+        days: daysDiff,
+        hours_per_day: hoursPerDay
+      }),
+    });
+
+    if (!response.ok) throw new Error("Plan oluşturulamadı.");
+    const data = await response.json();
+    renderPlannerResult(data);
+    setPdfStatus("PDF içeriğine göre plan başarıyla oluşturuldu.", "success");
+  } catch (error) {
+    if (plannerEmptyState) plannerEmptyState.classList.remove("hidden");
+    if (plannerStatusText) plannerStatusText.textContent = "Bir hata oluştu.";
+    setPdfStatus("Plan oluşturulamadı. Lütfen tekrar dene.", "error");
+    console.error(error);
+  } finally {
+    setPdfPlanLoading(false);
+    setPlannerLoading(false);
+  }
+}
+
+
+
 function renderPlannerResult(data) {
   if (!data || !data.plan) return;
-
-  // 🔥 EKLENDİ
   currentPlan = data.plan;
   saveCurrentPlan(currentPlan);
-
   if (plannerEmptyState) plannerEmptyState.classList.add("hidden");
   if (plannerResult) plannerResult.classList.remove("hidden");
-
-  if (plannerStatusText) {
-    plannerStatusText.textContent = "Plan başarıyla oluşturuldu.";
-  }
-
-  if (planTitle) {
-    planTitle.textContent = data.plan.title || "Oluşturulan Çalışma Planı";
-  }
-
+  if (plannerStatusText) plannerStatusText.textContent = "Plan başarıyla oluşturuldu.";
+  if (planTitle) planTitle.textContent = data.plan.title || "Oluşturulan Çalışma Planı";
   if (planDays) {
     planDays.innerHTML = "";
-
     (data.plan.days || []).forEach((dayItem) => {
       const card = document.createElement("div");
       card.className = "day-card";
-
       const tasksHtml = (dayItem.tasks || [])
         .map(task => `<li>${task}</li>`)
         .join("");
-
       card.innerHTML = `
-  <div class="day-card-top">
-    <span class="day-badge">Gün ${dayItem.day}</span>
-    <span class="day-duration">${dayItem.duration_hours} saat</span>
-  </div>
-
-  <h4>${dayItem.focus}</h4>
-
-  <ul class="day-task-list">
-    ${tasksHtml}
-  </ul>
-
-  <button class="add-day-btn" onclick="addDayToTasks(${dayItem.day})">
-    ➕ Günü Görevlere Ekle
-  </button>
-`;
-
+        <div class="day-card-top">
+          <span class="day-badge">Gün ${dayItem.day}</span>
+          <span class="day-duration">${dayItem.duration_hours} saat</span>
+        </div>
+        <h4>${dayItem.focus}</h4>
+        <ul class="day-task-list">
+          ${tasksHtml}
+        </ul>
+        <button class="add-day-btn" onclick="addDayToTasks(${dayItem.day})">
+          ➕ Günü Görevlere Ekle
+        </button>
+      `;
       planDays.appendChild(card);
     });
   }
-
   if (planTips) {
     planTips.innerHTML = "";
-
     (data.plan.tips || []).forEach((tip) => {
       const li = document.createElement("li");
       li.textContent = tip;
       planTips.appendChild(li);
     });
   }
-
   scrollToResult();
 }
 
-// 🔥 TAM ÇALIŞAN HAL
 function addDayToTasks(dayNumber) {
   if (!currentPlan) return;
-
   const day = currentPlan.days.find(d => d.day === dayNumber);
   if (!day) return;
-
   day.tasks.forEach(taskText => {
-    tasks.push({
-      text: taskText,
-      done: false
-    });
+    tasks.push({ text: taskText, done: false });
   });
-
   saveTasks();
   renderTasks();
-
-  showToast(
-    "Görevler eklendi",
-    `Gün ${dayNumber} içindeki ${day.tasks.length} görev başarıyla listene eklendi.`
-  );
+  showToast("Görevler eklendi", `Gün ${dayNumber} içindeki ${day.tasks.length} görev listene eklendi.`);
 }
 
 async function handleStudyPlannerSubmit(event) {
   event.preventDefault();
-
   if (!goalInput || !daysInput || !hoursInput) return;
-
   const goal = goalInput.value.trim();
   const days = Number(daysInput.value);
   const hours_per_day = Number(hoursInput.value);
-
   if (!goal || !days || !hours_per_day) {
     showPlannerError("Lütfen tüm alanları doldur.");
     return;
   }
-
   clearPlannerError();
   setPlannerLoading(true);
-
   if (plannerResult) plannerResult.classList.add("hidden");
   if (plannerEmptyState) plannerEmptyState.classList.add("hidden");
   if (plannerStatusText) plannerStatusText.textContent = "Yapay zekâ planın hazırlanıyor...";
-
   try {
     const response = await fetch(`${API_BASE_URL}/plan-study`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        goal,
-        days,
-        hours_per_day
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ goal, days, hours_per_day })
     });
-
-    if (!response.ok) {
-      throw new Error("Plan oluşturulamadı.");
-    }
-
+    if (!response.ok) throw new Error("Plan oluşturulamadı.");
     const data = await response.json();
     renderPlannerResult(data);
   } catch (error) {
@@ -336,25 +426,9 @@ async function handleStudyPlannerSubmit(event) {
   }
 }
 
-if (studyPlannerForm) {
-  studyPlannerForm.addEventListener("submit", handleStudyPlannerSubmit);
-}
-
-const savedPlan = loadCurrentPlan();
-
-if (savedPlan) {
-  renderPlannerResult({ plan: savedPlan });
-}
-
 /* =========================
    PLAN ASSISTANT CHAT
 ========================= */
-
-const chatForm = document.getElementById("chatForm");
-const chatInput = document.getElementById("chatInput");
-const chatSendBtn = document.getElementById("chatSendBtn");
-const chatMessages = document.getElementById("chatMessages");
-const chatStatusText = document.getElementById("chatStatusText");
 
 function saveChatHistory(history) {
   localStorage.setItem("chatHistory", JSON.stringify(history));
@@ -369,9 +443,7 @@ let chatHistory = loadChatHistory();
 
 function renderChatMessages() {
   if (!chatMessages) return;
-
   chatMessages.innerHTML = "";
-
   if (!chatHistory.length) {
     const empty = document.createElement("div");
     empty.className = "chat-bubble assistant";
@@ -379,69 +451,46 @@ function renderChatMessages() {
     chatMessages.appendChild(empty);
     return;
   }
-
   chatHistory.forEach((m) => {
     const bubble = document.createElement("div");
     bubble.className = `chat-bubble ${m.role}`;
     bubble.textContent = m.content;
     chatMessages.appendChild(bubble);
   });
-
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 async function handleChatSubmit(event) {
   event.preventDefault();
   if (!chatInput) return;
-
   const message = chatInput.value.trim();
   if (!message) return;
-
   chatInput.value = "";
   if (chatInput) chatInput.disabled = true;
   if (chatSendBtn) chatSendBtn.disabled = true;
   if (chatStatusText) chatStatusText.textContent = "Asistan düşünüyor...";
-
   chatHistory.push({ role: "user", content: message });
   saveChatHistory(chatHistory);
   renderChatMessages();
-
   try {
     const plan = loadCurrentPlan();
     const recentHistory = chatHistory.slice(-10);
-
     const response = await fetch(`${API_BASE_URL}/chat`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message,
-        plan,
-        history: recentHistory,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, plan, history: recentHistory }),
     });
-
-    if (!response.ok) {
-      throw new Error("Chat yanıtı alınamadı.");
-    }
-
+    if (!response.ok) throw new Error("Chat yanıtı alınamadı.");
     const data = await response.json();
     const reply = (data && data.reply) ? String(data.reply) : "";
-
     chatHistory.push({ role: "assistant", content: reply || "Bir cevap üretemedim." });
     saveChatHistory(chatHistory);
     renderChatMessages();
-
     if (chatStatusText) chatStatusText.textContent = "Yanıt hazır.";
   } catch (error) {
-    chatHistory.push({
-      role: "assistant",
-      content: "⚠️ Asistana bağlanılamadı. Backend çalışıyor mu kontrol et.",
-    });
+    chatHistory.push({ role: "assistant", content: "⚠️ Asistana bağlanılamadı. Backend çalışıyor mu kontrol et." });
     saveChatHistory(chatHistory);
     renderChatMessages();
-
     if (chatStatusText) chatStatusText.textContent = "Bir hata oluştu.";
     console.error(error);
   } finally {
@@ -451,7 +500,31 @@ async function handleChatSubmit(event) {
   }
 }
 
-if (chatForm) {
-  renderChatMessages();
-  chatForm.addEventListener("submit", handleChatSubmit);
+// Event Listeners Initialization
+function initApp() {
+  console.log("StudyBuddy: Initializing app...");
+  if (studyPlannerForm) studyPlannerForm.addEventListener("submit", handleStudyPlannerSubmit);
+  if (pdfAnalyzeBtn) pdfAnalyzeBtn.addEventListener("click", handlePdfAnalyze);
+  if (pdfPlanBtn) pdfPlanBtn.addEventListener("click", handlePdfPlan);
+  if (pdfInput) {
+    pdfInput.addEventListener("change", () => {
+      selectedPdfFile = pdfInput.files && pdfInput.files[0] ? pdfInput.files[0] : null;
+      if (selectedPdfFile) {
+        setPdfStatus("PDF seçildi. Analiz etmeye hazırsın.", "info");
+      } else {
+        if (pdfAnalysisStatus) {
+          pdfAnalysisStatus.textContent = "";
+          pdfAnalysisStatus.className = "pdf-analysis-status hidden";
+        }
+      }
+    });
+  }
+  if (chatForm) {
+    renderChatMessages();
+    chatForm.addEventListener("submit", handleChatSubmit);
+  }
+  const savedPlan = loadCurrentPlan();
+  if (savedPlan) renderPlannerResult({ plan: savedPlan });
 }
+
+document.addEventListener("DOMContentLoaded", initApp);

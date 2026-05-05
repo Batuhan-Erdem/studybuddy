@@ -76,14 +76,47 @@
         <span class="section-tag">YENİ</span>
         <h2>Yapay Zekâ Çalışma Planlayıcı</h2>
         <p>
-          Hedefini, kaç günün kaldığını ve günde kaç saat çalışabileceğini yaz.
-          Yapay zekâ senin için yapılandırılmış bir çalışma planı oluştursun.
+          İki ayrı karttan birini kullan: PDF kartı ile dosya tabanlı plan üret, manuel kart ile klasik plan oluştur.
         </p>
       </div>
 
       <div class="planner-layout">
-        <div class="planner-form-card">
-          <form id="studyPlannerForm" class="planner-form">
+        <div class="planner-input-stack">
+          <div class="planner-form-card pdf-upload-card">
+            <div class="pdf-upload-header">
+              <h3>1. PDF Kartı</h3>
+              <p>PDF'i analiz et veya bu karttan PDF'e göre plan oluştur.</p>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="pdfInput">PDF Dosyası</label>
+              <input id="pdfInput" type="file" accept="application/pdf,.pdf" />
+            </div>
+
+            <div class="planner-actions pdf-actions">
+              <button type="button" id="pdfAnalyzeBtn" class="secondary-btn">PDF’i Analiz Et</button>
+            </div>
+
+            <div id="pdfAnalysisStatus" class="pdf-analysis-status hidden"></div>
+
+            <div class="form-group full-width">
+              <label for="pdfDeadlineInput">Deadline Tarihi</label>
+              <input id="pdfDeadlineInput" type="date" />
+              <small class="deadline-hint">Deadline'ı buradan elle gir.</small>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="pdfHoursInput">Günlük Saat</label>
+              <input id="pdfHoursInput" type="number" min="0.5" step="0.5" placeholder="2" />
+            </div>
+
+            <div class="planner-actions">
+              <button type="button" id="pdfPlanBtn" class="primary-btn planner-submit-btn">PDF Kartından Plan
+                Oluştur</button>
+            </div>
+          </div>
+
+          <form id="studyPlannerForm" class="planner-form planner-form-card">
             <div class="form-group full-width">
               <label for="goalInput">Çalışma Hedefi</label>
               <textarea id="goalInput" rows="4"
