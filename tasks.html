@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StudyBuddy — Study Tools</title>
+  <title>StudyBuddy — Çalışma Araçları</title>
   <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
@@ -15,19 +15,19 @@
         <span>StudyBuddy</span>
       </div>
       <nav>
-        <a href="index.html">Home</a>
-        <a class="active" href="tasks.html">Study Tools</a>
-        <a href="about.html">About</a>
+        <a href="index.html">Ana Sayfa</a>
+        <a class="active" href="tasks.html">Çalışma Araçları</a>
+        <a href="about.html">Hakkında</a>
       </nav>
     </div>
   </header>
 
   <main class="container">
     <section class="hero">
-      <h1 class="h1">Study Tools</h1>
+      <h1 class="h1">Çalışma Araçları</h1>
       <p class="p">
-        This page will include dynamic features (task add/remove, filters, and persistence).
-        In the next step, we will build the interactive task list with JavaScript.
+        Bu sayfa üzerinden çalışma görevlerinizi ekleyebilir, yönetebilir ve ilerlemenizi takip edebilirsiniz. 
+        Tüm görevleriniz tarayıcınızda güvenle saklanır.
       </p>
     </section>
 
@@ -35,34 +35,35 @@
 
 <div class="card" style="grid-column: span 12;">
 
-<h3>Add Study Task</h3>
+<h3>Yeni Görev Ekle</h3>
 
-<input id="taskInput" type="text" placeholder="Enter a study task..." />
-
-<button onclick="addTask()">Add Task</button>
+<div style="display:flex; gap:10px;">
+  <input id="taskInput" type="text" placeholder="Bir çalışma görevi girin (örn: Matematik tekrarı)..." style="flex:1;" />
+  <button onclick="addTask()" class="primary-btn">Görev Ekle</button>
+</div>
 
 </div>
 
 <div class="card" style="grid-column: span 12;">
-  <h3>Task Controls</h3>
+  <h3>Görev Kontrolleri</h3>
 
   <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-    <input id="searchInput" type="text" placeholder="Search tasks..." />
+    <input id="searchInput" type="text" placeholder="Görevlerde ara..." />
     
     <select id="filterSelect">
-      <option value="all">All</option>
-      <option value="active">Active</option>
-      <option value="done">Done</option>
+      <option value="all">Tümü</option>
+      <option value="active">Devam Edenler</option>
+      <option value="done">Tamamlananlar</option>
     </select>
 
     <div id="taskCounter" style="color: var(--muted); margin-left:auto;">
-      0 tasks • 0 done
+      0 görev • 0 tamamlandı
     </div>
   </div>
 </div>
 
 <div class="card" style="grid-column: span 12;">
-  <h3>Your Tasks</h3>
+  <h3>Görevleriniz</h3>
   <ul id="taskList"></ul>
 </div>
 
@@ -70,7 +71,7 @@
   </main>
 
   <footer class="footer">
-    <div class="container">© 2026 StudyBuddy — Draft Website</div>
+    <div class="container">© 2026 StudyBuddy — Yapay Zekâ Destekli Çalışma Ortağınız</div>
   </footer>
 
   <script src="assets/app.js"></script>
