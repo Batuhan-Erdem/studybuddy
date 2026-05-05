@@ -48,8 +48,10 @@ async def analyze_pdf(file: UploadFile = File(...)):
         _, page_count = extract_text_from_pdf(content)
         
         # MCP ile yapılandırılmış metni oku
-        print(f"DEBUG: MCP ile PDF analizi başlatıldı: {file.filename}")
+        print(f"\n[MCP-CLIENT-İSTEĞİ] PDF analizi için uzman sunucuya bağlanılıyor: {file.filename}")
         pdf_text = await read_pdf_via_mcp(str(file_path))
+        
+        print(f"[MCP-CLIENT-YANITI] Uzman sunucudan veri başarıyla alındı. Karakter: {len(pdf_text)}")
         
         return PDFAnalysisResponse(
             status="success", 
