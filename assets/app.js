@@ -509,9 +509,13 @@ function initApp() {
   if (pdfInput) {
     pdfInput.addEventListener("change", () => {
       selectedPdfFile = pdfInput.files && pdfInput.files[0] ? pdfInput.files[0] : null;
+      const fileNameDisplay = document.getElementById("fileNameDisplay");
+      
       if (selectedPdfFile) {
+        if (fileNameDisplay) fileNameDisplay.textContent = selectedPdfFile.name;
         setPdfStatus("PDF seçildi. Analiz etmeye hazırsın.", "info");
       } else {
+        if (fileNameDisplay) fileNameDisplay.textContent = "Henüz dosya seçilmedi";
         if (pdfAnalysisStatus) {
           pdfAnalysisStatus.textContent = "";
           pdfAnalysisStatus.className = "pdf-analysis-status hidden";

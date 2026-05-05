@@ -90,7 +90,16 @@
 
             <div class="form-group full-width">
               <label for="pdfInput">PDF Dosyası</label>
-              <input id="pdfInput" type="file" accept="application/pdf,.pdf" />
+              <div class="file-upload-wrapper">
+                <input id="pdfInput" type="file" accept="application/pdf,.pdf" class="file-input-hidden" />
+                <label for="pdfInput" class="file-upload-custom">
+                  <div class="upload-icon">📄</div>
+                  <div class="upload-text">
+                    <span class="upload-title">PDF Seç</span>
+                    <span id="fileNameDisplay" class="upload-subtitle">Henüz dosya seçilmedi</span>
+                  </div>
+                </label>
+              </div>
             </div>
 
             <div class="planner-actions pdf-actions">
